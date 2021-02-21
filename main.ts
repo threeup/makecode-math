@@ -8,6 +8,10 @@ class FourDig {
     private third:Sprite
     private fourth:Sprite
     private val:number = 0
+    private thousands:number = 0
+    private hundreds:number = 0
+    private tens:number = 0
+    private ones:number = 0
     private anchorX:number = 0
     private anchorY:number = 0
 
@@ -63,6 +67,26 @@ class FourDig {
             this.second.setImage(this.getDigit(hundreds));
             this.third.setImage(this.getDigit(tens));
             this.fourth.setImage(this.getDigit(ones));
+            this.first.setFlag(SpriteFlag.Invisible, thousands == 0);
+            this.second.setFlag(SpriteFlag.Invisible, hundreds == 0);
+            this.third.setFlag(SpriteFlag.Invisible, tens == 0);
+            if(this.thousands != thousands) {
+                this.thousands = thousands
+                this.first.startEffect(effects.warmRadial, 300);
+            }
+            if(this.hundreds != hundreds) {
+                this.hundreds = hundreds
+                this.second.startEffect(effects.warmRadial, 300);
+            }
+            if(this.tens != tens) {
+                this.tens = tens
+                this.third.startEffect(effects.warmRadial, 300);
+            }
+            if(this.ones != ones) {
+                this.ones = ones
+                this.fourth.startEffect(effects.warmRadial, 300);
+            }
+            
         }
     }
 }
@@ -73,45 +97,50 @@ scoreSprite = textsprite.create("0",8,4);
 scoreSprite.setMaxFontHeight(16)
 scoreSprite.setPosition(6,8);
 target.setValue(50);
-current.setValue(0);
+current.setValue(1);
 
 let dig = 0;
-let prevUp = false;
-let prevDown = false;
+let prevUp = 0;
+let prevDown = 0;
 
 game.onUpdate(function() {
 
     if(controller.up.isPressed()) {
-        let increment = prevUp?2:1;
-        switch(dig) {
-            default:
-            case 0: current.changeValue(increment); break;
-            case 1: current.changeValue(increment*10); break;
-            case 2: current.changeValue(increment*100); break;
-            case 3: current.changeValue(increment*1000); break;
+        prevUp = prevUp+1;
+        prevDown = 0;
+        if(prevUp%3==0) {
+            let increment = prevUp>15?2:1;
+            switch(dig) {
+                default:
+                case 0: current.changeValue(increment); break;
+                case 1: current.changeValue(increment*10); break;
+                case 2: current.changeValue(increment*100); break;
+                case 3: current.changeValue(increment*1000); break;
+            }
         }
-        prevUp = true;
-        prevDown = false;
     } else if(controller.down.isPressed()) {
-        let increment = prevDown?-2:-1;
-        switch(dig) {
-            default:
-            case 0: current.changeValue(increment); break;
-            case 1: current.changeValue(increment*10); break;
-            case 2: current.changeValue(increment*100); break;
-            case 3: current.changeValue(increment*1000); break;
+        prevDown = prevDown+1;
+        prevUp = 0;
+        if(prevDown%3==0) {
+            let increment = prevDown>15?-2:-1;
+            switch(dig) {
+                default:
+                case 0: current.changeValue(increment); break;
+                case 1: current.changeValue(increment*10); break;
+                case 2: current.changeValue(increment*100); break;
+                case 3: current.changeValue(increment*1000); break;
+            }
         }
-        prevUp = false;
-        prevDown = true;
     } else {
-        prevUp = false;
-        prevDown = false;
+        prevUp = 0;
+        prevDown = 0;
     }
     
     if (controller.A.isPressed() ) {
         if(target.getValue() == current.getValue()) {
             info.changeScoreBy(1);
             scoreSprite.setText(info.score().toString());
+            scoreSprite.startEffect(effects.spray, 3);
             target.setValue(randint(0, 99))
         }
     }

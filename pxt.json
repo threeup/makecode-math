@@ -2,13 +2,15 @@
     "name": "makecode-math",
     "description": "",
     "dependencies": {
-        "device": "*"
+        "device": "*",
+        "arcade-text": "github:microsoft/arcade-text#v1.3.0"
     },
     "files": [
         "main.ts",
         "README.md",
         "assets.json",
-        "digits.ts"
+        "digits.ts",
+        "background.ts"
     ],
     "testFiles": [
         "test.ts"

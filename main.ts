@@ -151,7 +151,7 @@ function newAnswer(success:boolean) {
     } else {
         operation = "-";
         splitTop.setValue(randint(0, maxValue))
-        let bot = randint(0,target.getValue())
+        let bot = randint(0,splitTop.getValue())
         splitBottom.setValue(bot);
         target.setValue(splitTop.getValue()-bot);
     }

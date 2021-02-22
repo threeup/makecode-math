@@ -4,5 +4,20 @@ namespace projectImages {
 }
 namespace palettes {
     //% fixedInstance
-    export const palettetxt = hex`000000ffffffff2121ff93c4ff8135fff609249ca378dc52003fadaeb1d5a2c5f2c6c4dcc4dce8e9d8d2e0dcdf000000`;
+    export const palettetxt = hex`000000
+    ffffff
+    ff2121
+    ff93c4
+    ff8135
+    fff609
+    249ca3
+    78dc52
+    003fad
+    aeb1d5
+    a2c5f2
+    c6c4dc
+    c4dce8
+    e9d8d2
+    e0dcdf
+    333333`;
 }

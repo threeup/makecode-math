@@ -206,15 +206,25 @@ game.onUpdate(function() {
     if(controller.up.isPressed()) {
         s.prevUp = s.prevUp+1;
         s.prevDown = 0;
-        if(s.prevUp % r.rate == 0) {
-            let increment = s.prevUp>r.rate*2?2:1;
+        if(s.prevUp == 1 || s.prevUp % r.rate == 0) {
+            let increment = 1;
+            if(s.prevUp > r.rate*3){
+                increment = 5;
+            } else if(s.prevUp > r.rate*2){
+                increment = 2;
+            } 
             changeDig(increment);
         }
     } else if(controller.down.isPressed()) {
         s.prevDown = s.prevDown+1;
         s.prevUp = 0;
-        if(s.prevDown % r.rate == 0) {
-            let increment = s.prevDown>r.rate*2?-2:-1;
+        if(s.prevDown == 1 || s.prevDown % r.rate == 0) {
+            let increment = -1;
+            if(s.prevUp > r.rate*3){
+                increment = -5;
+            } else if(s.prevUp > r.rate*2){
+                increment = -2;
+            }
             changeDig(increment);
         }
     } else {
@@ -233,7 +243,7 @@ game.onUpdate(function() {
             s.prevB = 0;
             if(r.digits==1) {
                 r.digits=2;
-                r.max=99;
+                r.max=19;
                 moveLayout();
                 newAnswer(false);
                 current.setValue(1);

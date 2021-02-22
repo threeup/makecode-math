@@ -1,5 +1,9 @@
- scene.setBackgroundColor(1)
- scene.setBackgroundImage(background.greatwave)
+ scene.setBackgroundColor(0)
+ let waveImage:Image = null;
+ waveImage = bg.wave;
+ //waveImage.setPalette(pal.muted)
+ scene.setBackgroundImage(waveImage)
+ 
  
 class FourDig {
 
@@ -91,17 +95,65 @@ class FourDig {
     }
 }
 let current = new FourDig(40,90);
-let target = new FourDig(40,25);
+let splitTop = new FourDig(40,15);
+let splitBottom = new FourDig(40,45);
+let target = new FourDig(40,125);
+
+
 let scoreSprite: TextSprite = null;
 scoreSprite = textsprite.create("0",8,4);
 scoreSprite.setMaxFontHeight(16)
 scoreSprite.setPosition(6,8);
-target.setValue(50);
+target.setValue(4);
+splitTop.setValue(2);
+splitBottom.setValue(2);
 current.setValue(1);
+
+let operation = "+"
+let operationSprite: TextSprite = null;
+operationSprite = textsprite.create(operation, 0,4);
+operationSprite.setMaxFontHeight(40);
+operationSprite.setPosition(80, 41);
+operationSprite.setOutline(4, 10)
+
+
+let equalsSprite: TextSprite = null;
+equalsSprite = textsprite.create("=", 0,4);
+equalsSprite.setMaxFontHeight(40);
+equalsSprite.setPosition(80, 85);
+equalsSprite.setOutline(4, 10)
+
 
 let dig = 0;
 let prevUp = 0;
 let prevDown = 0;
+let maxValue = 9;
+
+function newAnswer(success:boolean) {
+    if(success) {
+        info.changeScoreBy(1);
+        scoreSprite.setText(info.score().toString());
+        scoreSprite.startEffect(effects.spray, 3);
+    }
+    
+    
+    if(randint(0, 1) == 0) {
+        operation = "+";
+        target.setValue(randint(0, maxValue))
+        let top = randint(0,target.getValue())
+        splitTop.setValue(top);
+        splitBottom.setValue(target.getValue() - top);
+        
+    } else {
+        operation = "-";
+        splitTop.setValue(randint(0, maxValue))
+        let bot = randint(0,target.getValue())
+        splitBottom.setValue(bot);
+        target.setValue(splitTop.getValue()-bot);
+    }
+    operationSprite.setText(operation);
+    
+}
 
 game.onUpdate(function() {
 
@@ -138,10 +190,7 @@ game.onUpdate(function() {
     
     if (controller.A.isPressed() ) {
         if(target.getValue() == current.getValue()) {
-            info.changeScoreBy(1);
-            scoreSprite.setText(info.score().toString());
-            scoreSprite.startEffect(effects.spray, 3);
-            target.setValue(randint(0, 99))
+            newAnswer(true);
         }
     }
     if (controller.B.isPressed() ) {

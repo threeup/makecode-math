@@ -3,14 +3,17 @@
     "description": "",
     "dependencies": {
         "device": "*",
-        "arcade-text": "github:microsoft/arcade-text#v1.3.0"
+        "arcade-text": "github:microsoft/arcade-text#v1.3.0",
+        "palette": "*"
     },
     "files": [
         "main.ts",
         "README.md",
         "assets.json",
         "digits.ts",
-        "background.ts"
+        "background.ts",
+        "images.g.jres",
+        "images.g.ts"
     ],
     "testFiles": [
         "test.ts"

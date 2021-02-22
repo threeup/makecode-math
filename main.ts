@@ -1,52 +1,74 @@
- scene.setBackgroundColor(0)
- let bgImage:Image = null;
- bgImage = projectImages.wave;
+scene.setBackgroundColor(0)
+let bgImage:Image = projectImages.greatwave;
 
-let palBuf2: Buffer = palettes.palettetxt;
- 
- image.setPalette(palBuf2)
- scene.setBackgroundImage(bgImage);
+image.setPalette(palettes.palettetxt)
+scene.setBackgroundImage(bgImage);
 
- 
- 
+class Rules {
+    public min:number;
+    public max:number;
+    public digits:number;
+    public speed:number;
+    public rate:number;
+    constructor(speed: number, min:number, max:number, digits:number) {
+        this.speed = Math.clamp(1,100,speed);
+        this.rate = Math.round(100/speed);
+        this.min = min;
+        this.max = max;
+        this.digits = digits;
+    }
+}
+class State {
+    public prevUp:number = 0;
+    public prevDown:number = 0;
+    public prevB:number = 0;
+    public curDigit:number = 0;
+    constructor() {
+        this.prevUp = 0;
+        this.prevDown = 0;
+        this.prevB = 0;
+        this.curDigit = 0;
+    }
+}
+
 class FourDig {
-
     private first:Sprite
     private second:Sprite
     private third:Sprite
     private fourth:Sprite
-    private val:number = 0
+    private val:number = -1
     private thousands:number = 0
     private hundreds:number = 0
     private tens:number = 0
     private ones:number = 0
-    private anchorX:number = 0
-    private anchorY:number = 0
 
-    constructor(anchorX: number, anchorY: number) {
+    constructor() {
         this.first = sprites.create(this.getDigit(0));
-        this.first.setPosition(1+anchorX, 1+anchorY);
         this.second = sprites.create(this.getDigit(0));
-        this.second.setPosition(26+anchorX, 1+anchorY);
         this.third = sprites.create(this.getDigit(0));
-        this.third.setPosition(51+anchorX, 1+anchorY);
         this.fourth = sprites.create(this.getDigit(0));
+    }
+
+    public setPosition(anchorX: number, anchorY: number) {
+        this.first.setPosition(1+anchorX, 1+anchorY);
+        this.second.setPosition(26+anchorX, 1+anchorY);
+        this.third.setPosition(51+anchorX, 1+anchorY);
         this.fourth.setPosition(76+anchorX, 1+anchorY);
     }
 
     public getDigit(num:number):any {
         switch(num) {
             default:
-            case 0: return digits.zero;
-            case 1: return digits.one;
-            case 2: return digits.two;
-            case 3: return digits.three;
-            case 4: return digits.four;
-            case 5: return digits.five;
-            case 6: return digits.six;
-            case 7: return digits.seven;
-            case 8: return digits.eight;
-            case 9: return digits.nine;
+            case 0: return projectImages.zero;
+            case 1: return projectImages.one;
+            case 2: return projectImages.two;
+            case 3: return projectImages.three;
+            case 4: return projectImages.four;
+            case 5: return projectImages.five;
+            case 6: return projectImages.six;
+            case 7: return projectImages.seven;
+            case 8: return projectImages.eight;
+            case 9: return projectImages.nine;
         }
     }
 
@@ -54,8 +76,9 @@ class FourDig {
         return this.val;
     }
     
-    public changeValue(ch:number):void {
-        this.setValue(this.val+ch);
+    public changeValue(ch:number, min:number, max:number):void {
+        let next = Math.clamp(min, max,this.val+ch);
+        this.setValue(next);
     }
 
     public setValue(num:number):void {
@@ -94,44 +117,53 @@ class FourDig {
                 this.ones = ones
                 this.fourth.startEffect(effects.warmRadial, 300);
             }
-            
         }
     }
 }
-let current = new FourDig(40,90);
-let splitTop = new FourDig(40,15);
-let splitBottom = new FourDig(40,45);
-let target = new FourDig(40,125);
 
-
+let r = new Rules(6,0,9,1);
+let s = new State();
+ 
 let scoreSprite: TextSprite = null;
-scoreSprite = textsprite.create("0",8,4);
-scoreSprite.setMaxFontHeight(16)
-scoreSprite.setPosition(6,8);
-target.setValue(4);
-splitTop.setValue(2);
-splitBottom.setValue(2);
-current.setValue(1);
 
-let operation = "+"
+let operation = "+";
 let operationSprite: TextSprite = null;
-operationSprite = textsprite.create(operation, 0,4);
-operationSprite.setMaxFontHeight(40);
-operationSprite.setPosition(80, 41);
-operationSprite.setOutline(4, 10)
-
-
 let equalsSprite: TextSprite = null;
-equalsSprite = textsprite.create("=", 0,4);
-equalsSprite.setMaxFontHeight(40);
-equalsSprite.setPosition(80, 85);
-equalsSprite.setOutline(4, 10)
 
+let current:FourDig = null;
+let splitTop:FourDig = null;
+let splitBottom:FourDig = null;
+let target:FourDig = null;
 
-let dig = 0;
-let prevUp = 0;
-let prevDown = 0;
-let maxValue = 9;
+function createLayout() {
+    current = new FourDig();
+    splitTop = new FourDig();
+    splitBottom = new FourDig();
+    target = new FourDig();
+
+    scoreSprite = textsprite.create("0",8,4);
+    scoreSprite.setMaxFontHeight(16)
+    scoreSprite.setPosition(6,8);
+
+    operationSprite = textsprite.create(operation, 0,4);
+    operationSprite.setMaxFontHeight(40);
+    operationSprite.setOutline(3, 15)
+
+    equalsSprite = textsprite.create("=", 0,4);
+    equalsSprite.setMaxFontHeight(40);
+    equalsSprite.setOutline(3, 15)
+}
+
+function moveLayout() {
+    let xpos = 110 - 30*r.digits;
+    operationSprite.setPosition(xpos, 44);
+    equalsSprite.setPosition(xpos, 89);
+
+    current.setPosition(40,93);
+    splitTop.setPosition(40,18);
+    splitBottom.setPosition(40,48);
+    target.setPosition(40,132);
+}
 
 function newAnswer(success:boolean) {
     if(success) {
@@ -139,57 +171,55 @@ function newAnswer(success:boolean) {
         scoreSprite.setText(info.score().toString());
         scoreSprite.startEffect(effects.spray, 3);
     }
-    
-    
     if(randint(0, 1) == 0) {
         operation = "+";
-        target.setValue(randint(0, maxValue))
+        target.setValue(randint(0, r.max))
         let top = randint(0,target.getValue())
         splitTop.setValue(top);
         splitBottom.setValue(target.getValue() - top);
-        
     } else {
         operation = "-";
-        splitTop.setValue(randint(0, maxValue))
+        splitTop.setValue(randint(0, r.max))
         let bot = randint(0,splitTop.getValue())
         splitBottom.setValue(bot);
         target.setValue(splitTop.getValue()-bot);
     }
     operationSprite.setText(operation);
-    
 }
 
-game.onUpdate(function() {
+function changeDig(increment:number) {
+    switch(s.curDigit) {
+        default:
+        case 0: current.changeValue(increment,r.min,r.max); break;
+        case 1: current.changeValue(increment*10,r.min,r.max); break;
+        case 2: current.changeValue(increment*100,r.min,r.max); break;
+        case 3: current.changeValue(increment*1000,r.min,r.max); break;
+    }
+}
 
+createLayout();
+moveLayout();
+current.setValue(1);
+newAnswer(false);
+
+game.onUpdate(function() {
     if(controller.up.isPressed()) {
-        prevUp = prevUp+1;
-        prevDown = 0;
-        if(prevUp%3==0) {
-            let increment = prevUp>15?2:1;
-            switch(dig) {
-                default:
-                case 0: current.changeValue(increment); break;
-                case 1: current.changeValue(increment*10); break;
-                case 2: current.changeValue(increment*100); break;
-                case 3: current.changeValue(increment*1000); break;
-            }
+        s.prevUp = s.prevUp+1;
+        s.prevDown = 0;
+        if(s.prevUp % r.rate == 0) {
+            let increment = s.prevUp>r.rate*2?2:1;
+            changeDig(increment);
         }
     } else if(controller.down.isPressed()) {
-        prevDown = prevDown+1;
-        prevUp = 0;
-        if(prevDown%3==0) {
-            let increment = prevDown>15?-2:-1;
-            switch(dig) {
-                default:
-                case 0: current.changeValue(increment); break;
-                case 1: current.changeValue(increment*10); break;
-                case 2: current.changeValue(increment*100); break;
-                case 3: current.changeValue(increment*1000); break;
-            }
+        s.prevDown = s.prevDown+1;
+        s.prevUp = 0;
+        if(s.prevDown % r.rate == 0) {
+            let increment = s.prevDown>r.rate*2?-2:-1;
+            changeDig(increment);
         }
     } else {
-        prevUp = 0;
-        prevDown = 0;
+        s.prevUp = 0;
+        s.prevDown = 0;
     }
     
     if (controller.A.isPressed() ) {
@@ -198,9 +228,26 @@ game.onUpdate(function() {
         }
     }
     if (controller.B.isPressed() ) {
-        current.setValue(0);
+        s.prevB = s.prevB+1;
+        if(s.prevB > 20) {
+            s.prevB = 0;
+            if(r.digits==1) {
+                r.digits=2;
+                r.max=99;
+                moveLayout();
+                newAnswer(false);
+                current.setValue(1);
+            } else {
+                r.digits=1;
+                r.max=9;
+                moveLayout();
+                newAnswer(false);
+                current.setValue(1);
+            }
+        }
     }
-
-    
+    else {
+        s.prevB = 0;
+    }
 })
  

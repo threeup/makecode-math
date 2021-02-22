@@ -1,8 +1,12 @@
  scene.setBackgroundColor(0)
- let waveImage:Image = null;
- waveImage = bg.wave;
- //waveImage.setPalette(pal.muted)
- scene.setBackgroundImage(waveImage)
+ let bgImage:Image = null;
+ bgImage = projectImages.wave;
+
+let palBuf2: Buffer = palettes.palettetxt;
+ 
+ image.setPalette(palBuf2)
+ scene.setBackgroundImage(bgImage);
+
  
  
 class FourDig {

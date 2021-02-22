@@ -4,16 +4,17 @@
     "dependencies": {
         "device": "*",
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
-        "palette": "*"
+        "palette": "*",
+        "Color Fading": "github:jwunderl/pxt-color#v0.2.0"
     },
     "files": [
         "main.ts",
         "README.md",
         "assets.json",
         "digits.ts",
-        "background.ts",
         "images.g.jres",
-        "images.g.ts"
+        "images.g.ts",
+        "assets.ts"
     ],
     "testFiles": [
         "test.ts"
